@@ -19,7 +19,14 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::group(['prefix' => 'admin', 'middleware' => 'auth' ], function () {
+Route::view( 'mail-vertify', 'mails.mail-vertify' );
+Route::post( 'mail-vertify', [ AdminDashboardController::class, 'vertifyEmail' ])->name( 'mail-vertify' );
+
+Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'isAdmin' ] ], function () {
+
+    Route::get('users/export/', [ AdminDashboardController::class, 'export' ])->name( 'users.export' );
+    Route::post( 'import/category',[ AdminDashboardController::class, 'importCategory' ] )->name( 'import.category' );
+
     Route::controller(AdminDashboardController::class)->group(function () {
         Route::get('dashboard', [AdminDashboardController::class, 'home'])->name('home');
     });

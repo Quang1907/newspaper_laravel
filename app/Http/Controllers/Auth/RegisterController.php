@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMail;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -67,13 +70,25 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'birthday' => $data['birthday'],
             'phonenumber' => $data['phonenumber'],
             'address' => $data['address'],
+            'token' =>  rand( 11111, 99999 ),
             'password' => Hash::make($data['password']),
         ]);
+
+        $data = [
+            'user_name' => $data['name'],
+            'token' => $user->token,
+        ];
+
+        Session::put('email',  $user->email );
+        Session::put('token',  $user->token );
+        
+        SendMail::dispatch( $data, $user );
+        return $user;
     }
 }

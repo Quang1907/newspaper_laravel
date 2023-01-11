@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Admin\Post\CreateRequest;
 use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -15,7 +17,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        return view('admin.post.index');
+        $posts = Post::search()->paginate(5);
+        return view('admin.post.index', compact('posts'));
     }
 
     /**
@@ -26,7 +29,7 @@ class PostController extends Controller
     public function create()
     {
         $categories = Category::all();
-        return view('admin.post.create', compact( 'categories' ) );
+        return view('admin.post.create', compact('categories'));
     }
 
     /**
@@ -35,9 +38,14 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateRequest $request)
     {
-        //
+        $request['user_id'] = auth()->user()->id;
+        $request['slug'] = Str::slug($request->name . '-' . time());
+        $request['image'] = str_replace('http://127.0.0.1:8000/', '', $request->image);
+        toast('Post Created Successfully!!', 'success');
+        Post::create($request->all());
+        return redirect()->route('post.index');
     }
 
     /**

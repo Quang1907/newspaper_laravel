@@ -20,6 +20,14 @@
                 @enderror
             </div>
             <div class="mb-3">
+                <label for="" class="form-label">Meta Title</label>
+                <input type="text" class="form-control" name="meta_title" value='{{ old('meta_title') }}'
+                    id="" aria-describedby="helpId" placeholder="">
+                @error('meta_title')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
+            </div>
+            <div class="mb-3">
                 <label for="" class="form-label">Mô tả ngắn</label>
                 <input type="text" class="form-control" name="small_description" value='{{ old('small_description') }}'
                     id="" aria-describedby="helpId" placeholder="">
@@ -30,14 +38,20 @@
             <div class="mb-3">
                 <label for="" class="form-label">Danh mục cha</label>
                 <select class="form-select form-select-lg" name="category_id" id="">
-                    <option selected value="0">Choose post</option>
-                    {{ recursiveCategory($categories, $html) }}
+                    <option selected>Choose category</option>
+                    {{ recursiveCategory($categories, $html, old( 'category_id' ) ) }}
                     {!! $html !!}
                 </select>
+                @error('category_id')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="mb-3">
                 <label for="" class="form-label">Nội dung</label>
                 <textarea id="my-editor" name="description" class="form-control">{!! old('description') !!}</textarea>
+                @error('description')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="mb-3">
                 <label for="">Image</label>
@@ -47,10 +61,13 @@
                             <i class="fa fa-picture-o"></i> Choose
                         </a>
                     </span>
-                    <input id="thumbnail" class="form-control" type="hidden" name="filepath">
+                    <input id="thumbnail" class="form-control" type="hidden" name="image">
                 </div>
                 <div id="holder" style="">
                 </div>
+                @error('image')
+                    <small id="helpId" class="text-danger">{{ $message }}</small>
+                @enderror
             </div>
             <div class="mb-3">
                 <button class="btn btn-success">Create</button>
